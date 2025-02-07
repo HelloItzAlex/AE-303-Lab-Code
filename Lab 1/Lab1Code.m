@@ -1,145 +1,205 @@
-%%%%%%%%%%%%%%%%%%%%%%%%% Data %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-P2in = [29.70; 29.72; 29.62; 29.63; 29.61; 29.64; 29.63; 29.57;...
- 29.56; 29.64; 29.64; 29.64];
-P2mm = [754.7; 754.6; 752.8; 752.4; 753.6; 752.8; 752.5; 751.0; 751.2;...
- 752.7; 752.9; 752.4];
-T2F = [73.1; 73.5; 73.2; 73.9; 73.7; 73.8; 74.1; 74.0; 74.2; 74.1;...
- 74.2; 74.4];
-P1in = [30.00; 29.70; 29.80; 29.80; 29.66; 29.81; 29.83; 29.73; 29.71;...
- 29.74; 29.76; 29.71; 29.72; 29.70; 29.72; 29.73; 29.73; 29.73; 29.74];
-P3in = [29.71; 29.68; 29.65; 29.71; 29.69; 29.70; 29.69; 29.70; 29.69;...
- 29.70; 29.69; 29.68; 29.75; 29.72; 29.65; 29.65; 29.63; 29.71; 29.67];
-n1 = numel(P1in);
-n2 = numel(P2in);
-n3 = numel(P3in);
-Ni = n1 + n2 + n3;
-%%%%%%%%%%%%%%%%%%%%%%%%%% Mean %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-MP2in = sum(P2in)/12; %29.6333
-MP2mm = sum(P2mm)/12/25.4; %752.8000 mm %29.6378
-MT2F = sum(T2F)/12; %73.8500
-%%%%%%%%%%%%%%%%%%% Offsets/Interpolation Inches %%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%% Gravity Correction Inches %%%%%
-x1g = 29; x2g = 30;
-y1g = 32; y2g = 34;
-f11g = 0.035; f21g = 0.036; f12g = 0.030; f22g = 0.031;
-xig=MP2in; yig=32.7157;
-Fig = (yig-y2g)/(y1g-y2g)*((xig-x2g)/(x1g-x2g)*f11g + ...
- (xig-x1g)/(x2g-x1g)*f21g) + (yig-y1g)/(y2g-y1g)*((xig-x2g)/...
- (x1g-x2g)*f12g + (xig-x1g)/(x2g-x1g)*f22g);
-American Institute of Aeronautics and Astronautics
-9
-% Fig = 0.0338
-%%%%% Tempreture Correction Inches %%%%%
-x1 = 29; x2 = 30;
-y1 = 72; y2 = 74;
-f11 = 0.114; f21 = 0.118; f12 = 0.119; f22 = 0.123;
-xi = MP2in; yi = MT2F;
-Fi = (yi-y2)/(y1-y2)*((xi-x2)/(x1-x2)*f11 + (xi-x1)/(x2-x1)*f21) + ...
- (yi-y1)/(y2-y1)*((xi-x2)/(x1-x2)*f12 + (xi-x1)/(x2-x1)*f22);
-% Fi = 0.1212
-%%%%%%%%%%%%%%%%%%%% Applying Corrections Inches %%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%% Inches %%%%%
-cgin = (32.1740 - Fig)*0.3048; % Corrected Gravity = 9.7963 m/s^2
-chin = (P2in - Fi)/ 39.37; % Corrected Height in m
-rho = 13595; % Density of Mercury in kg/m^3
-cPin = rho*cgin*chin; % Corrected Pressure Pa
-%%%%%%%%%%%%%%%%%%% Offsets/Interpolation MM %%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%% Gravity Correction MM %%%%%
-X1g = 29; X2g = 30;
-Y1g = 32; Y2g = 34;
-F11g = 0.035; F21g = 0.036; F12g = 0.030; F22g = 0.031;
-Xig=MP2mm; Yig=32.7157;
-Figg = (Yig-Y2g)/(Y1g-Y2g)*((Xig-X2g)/(X1g-X2g)*F11g + ...
- (Xig-X1g)/(X2g-X1g)*F21g) + (Yig-Y1g)/(Y2g-Y1g)*((Xig-X2g)/...
- (X1g-X2g)*F12g + (Xig-X1g)/(X2g-X1g)*F22g);
-% Fig = 0.0338
-%%%%% Tempreture Correction MM %%%%%
-X1 = 29; X2 = 30;
-Y1 = 72; Y2 = 74;
-F11 = 0.114; F21 = 0.118; F12 = 0.119; F22 = 0.123;
-Xi = MP2mm; Yi = MT2F;
-Fii = (Yi-Y2)/(Y1-Y2)*((Xi-X2)/(X1-X2)*F11 + (Xi-X1)/(X2-X1)*F21) + ...
- (Yi-Y1)/(Y2-Y1)*((Xi-X2)/(X1-X2)*F12 + (Xi-X1)/(X2-X1)*F22);
-% Fi = 0.1212
-%%%%%%%%%%%%%%%%%%%% Applying Corrections MM %%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%% Inches %%%%%
-cgmm = (32.1740 - Figg)*0.3048; % Corrected Gravity = 9.7963 m/s^2
-chmm = (P2in - Fii)/39.37; % Corrected Height in m
-rho = 13595; % Density of Mercury in kg/m^3
-cPmm = rho*cgmm*chmm; % Corrected Pressure in
-%%%%%%%%%%%%%%%%%%%%% Corrected Data Table %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-t = 2.201;
-R = 287.058;
-T = (T2F-32)*(5/9)+273.15;
-MT = mean(T);
-SMT = sqrt((1/(12-1))*sum((T-MT).^2));
-UT = 2.201*SMT;
-SDTM = SMT/sqrt(12);
-USDTM = t*SDTM;
-D = cPin./(R*((T2F-32)*(5/9)+273.15));
-Table = table(P2in,P2mm,T2F,cPin, cPmm);
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Table 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-MTOTS = mean(T2F);
-SXTOTS = sqrt((1/(12-1))*sum((T2F-MTOTS).^2));
-UTOTS = t*SXTOTS;
-MPINOTS = mean(P2in);
-SXPNOTS = sqrt((1/(12-1))*sum((P2in-MPINOTS).^2));
-UPINOTS = t*SXPNOTS;
-MPPOTS = mean(cPin);
-SXPPOTS = sqrt((1/(12-1))*sum((cPin-MPPOTS).^2));
-UPPOTS = t*SXPPOTS;
-MDOTS = mean(D);
-SXDOTS = sqrt((1/(12-1))*sum((D-MDOTS).^2));
-UDOTS = sqrt(((1/(R^2*MT^2))*UPPOTS^2)+((MPPOTS^2/(R^2*MT^4))*UT^2));
-%%%%%%%%%%%%%%%%%%%%%%%%%%%% Table 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-SDMTE = SXTOTS/sqrt(12);
-USDMTE = t*SDMTE;
-SDMPINE = SXPNOTS/sqrt(12);
-USDMPINE = t*SDMPINE;
-SDMPPE = SXPPOTS/sqrt(12);
-USDMPPE = t*SDMPPE;
-SDMDE = MDOTS/sqrt(12);
-UDE = sqrt(((1/(R^2*MT^2))*USDMPPE^2)+((MPPOTS^2/(R^2*MT^4))*USDTM^2));
-%%%%%%%%%%%%%%%%%%%%%%%%%% Convergence Test %%%%%%%%%%%%%%%%%%%%%%%%%
-American Institute of Aeronautics and Astronautics
-11
-Pressure1 = (P1in)';
-Pressure2 = (P2in)';
-Pressure3 = (P3in)';
-Pressure = [Pressure1 Pressure2 Pressure3];
-Mean(1,1) = 29.70;
-Standard(1,1)= 0;
-Standard_Mean(1,1) = 0;
-for i = 2:Ni
- Mean(1,i) = ((sum(Pressure(1,1:i)))/i);
- Standard(1,i) = sqrt((1/(i-1))*sum((Pressure(1,i)-Mean(1,i)).^2));
- Standard_Mean(1,i) = Standard(1,i)./sqrt(i);
-end
-figure (1)
-subplot(3,1,1)
-plot(1:1:Ni,Mean(1:Ni), 'color', "#0072BD");
-title('Convergence of Mean')
-subtitle(['Measured Pressure [inHg] --- Convergance Towards $\bar{x}$' ...
- ' = 29.70'],'Interpreter','Latex')
-ylabel('$\bar{x}$ [inHg]', 'Interpreter','Latex')
-xlabel('Number of Samples', 'Interpreter','Latex')
-xticks([0:5:Ni])
-grid on
-subplot(3,1,2)
-plot(2:1:Ni,Standard(2:Ni), 'color', "#A2142F");
-title('Convergence of Standard Deviation')
-subtitle('Measured Pressure [inHg] --- Convergance Towards Sx = 0', ...
- 'Interpreter','Latex')
-ylabel('Sx [inHg]', 'Interpreter','Latex')
-xlabel('Number of Samples', 'Interpreter','Latex')
-xticks([0:5:Ni])
-grid on
-subplot(3,1,3)
-plot(2:1:Ni,Standard_Mean(2:Ni), 'color', "#77AC30");
-title('Convergence of Standard Deviation of the Means')
-subtitle(['Measured Pressure [inHg] --- Convergance ' ...
- 'Towards S$\bar{x}$= 0'], 'Interpreter','Latex')
-ylabel('S$\bar{x}$ [inHg]', 'Interpreter','Latex')
-xlabel('Number of Samples', 'Interpreter','Latex')
-xticks([0:5:Ni])
-grid on
+clc; clear; close;
+% Lab 1
+% Alex Aarhus
+% AE 303
+% Lab Data Parsing
+P_Runs = readtable('Lab 2 Data SP24 Tue.xlsx', 'sheet', 'Group 3');
+P_0_Raw = P_Runs{3:37,2:5}; P_2_Raw = P_Runs{3:37,6:9}; P_7_Raw = P_Runs{3:37,10:13};
+% Average of each row for each pressure reading
+P_0 = mean(P_0_Raw, 2);P_2 = mean(P_2_Raw, 2);P_7 = mean(P_7_Raw, 2);
+% Ambient conditions
+Pamb = 30.01; % InHg
+Tamb = 75.2; % F
+% Latitude Correction
+SD_lat = 32.7157;
+Lat_correction29 = interp1([32 34],[0.035 0.030], SD_lat);
+Lat_correction30 = interp1([32 34],[0.036 0.031], SD_lat);
+Lat_correction = interp1([29 30], [Lat_correction29 Lat_correction30], Pamb, 'linear', 'extrap');
+% Temperature Correction
+temps = 72:2:76;
+correction29 = [.114, .119, .124];
+correction30 = [.118, .123, .128];
+correction31 = [.122, .127, .133];
+T_correct29 = interp1(temps, correction29, Tamb);
+T_correct30 = interp1(temps, correction30, Tamb);
+T_correct31 = interp1(temps, correction31, Tamb);
+Temp_correction = interp1([29 30 31], [T_correct29 T_correct30 T_correct30], Pamb);
+% Total inHg correction
+Corrected_h = Pamb - Lat_correction - Temp_correction;
+Corrected_h = convlength(Corrected_h,'in','m'); % m
+% Corrected Pressure Calculation
+Standard_gravity = 9.80665; % m/s^2
+rhoHG = 13595; % kg/m^3
+Corrected_Pressure_Amb = rhoHG.*Standard_gravity*Corrected_h; % kg/m^3 * m/s^2 * m= Pa
+Corrected_Pressure_Amb = convpres(Corrected_Pressure_Amb, "Pa", "psi");
+Temps = [76.5667; 76.1489; 86.5359];
+% q indicated
+q_indicated0 = [P_0(1:6); P_0(8:35)];
+q_indicated2 = [P_2(1:6); P_2(8:35)];
+q_indicated7 = [P_7(1:6); P_7(8:35)];
+% q true
+q_true0 = q_indicated0 - P_0(7);
+q_true2 = q_indicated2 - P_2(7);
+q_true7 = q_indicated7 - P_7(7);
+% Tunnel flow uniformity
+q_uniform0 = (( q_true0 - mean(q_true0, 'all') ) / mean(q_true0, 'all')) * 100;
+q_uniform2 = (( q_true2 - mean(q_true2, 'all') ) / mean(q_true2, 'all')) * 100;
+q_uniform7 = (( q_true7 - mean(q_true7, 'all') ) / mean(q_true7, 'all')) * 100;
+% Corrected Barometer Pressure for Density
+P_corr0 = Corrected_Pressure_Amb + P_0(7) - P_0(7);P_corr0 = convpres(P_corr0, "psi", "Pa");
+P_corr2 = Corrected_Pressure_Amb + P_2(7) - P_0(7);P_corr2 = convpres(P_corr2, "psi", "Pa");
+P_corr7 = Corrected_Pressure_Amb + P_7(7) - P_0(7);P_corr7 = convpres(P_corr7, "psi", "Pa");
+%Density Calcs
+R = 287.1;
+rho0 = P_corr0 / (R * convtemp(Temps(1), 'F', 'K'));
+rho2 = P_corr2 / (R * convtemp(Temps(2), 'F', 'K'));
+rho7 = P_corr7 / (R * convtemp(Temps(3), 'F', 'K'));
+v0 = (sqrt((2 .* abs(convpres(q_true0,'psi', 'Pa'))) ./ rho0));
+v2 = (sqrt((2 .* abs(convpres(q_true2,'psi', 'Pa'))) ./ rho2));
+v7 = (sqrt((2 .* abs(convpres(q_true7,'psi', 'Pa'))) ./ rho7));
+% Tunnel flow uniformity
+v_uniform0 = (( v0 - mean(v0, 'all') ) / mean(v0, 'all')) * 100;
+v_uniform2 = (( v2 - mean(v2, 'all') ) / mean(v2, 'all')) * 100;
+v_uniform7 = (( v7 - mean(v7, 'all') ) / mean(v7, 'all')) * 100;
+%unit Re = rho v / meu
+Re0 = (rho0 * v0) / (18.34 * 10^-6);
+Re2 = (rho2 * v2) / (18.34 * 10^-6);
+Re7 = (rho7 * v7) / (18.6 * 10^-6);
+disp('Res')
+disp([mean(Re0, 'all'), mean(Re2, 'all'), mean(Re7, 'all')])
+%% Visualization
+% Measured Pressure Uniformity
+fig = figure('Visible', 'off');
+plot(P_0, 'o');
+hold on;
+plot(P_2, 'o');
+plot(P_7, 'o');
+yline([mean(P_0, 'all'), mean(P_2, 'all'), mean(P_7, 'all')], 'r');
+grid on; grid minor;
+xlabel('Pressure Port');ylabel('Pressure [psi]');
+title('Flow uniformity - Measured Pressure');
+legend('0.0 inH_2O', '2.0 inH_2O', '7.0 inH_2O', 'Average', 'Location', 'northeast');
+hold off;
+exportgraphics(fig, 'Flow uniformity_Measured Pressure.pdf', 'ContentType', 'vector');
+close(fig);
+% Dynamic Pressure Uniformity
+fig = figure('Visible', 'off');
+plot(q_true0, 'o');
+hold on;
+plot(q_true2, 'o');
+plot(q_true7, 'o');
+yline([0.0, 0.0721824, 0.252638], 'k');
+yline([mean(q_true0, 'all'), mean(q_true2, 'all'), mean(q_true7, 'all')], 'r');
+grid on; grid minor;
+xlabel('Pressure Port');
+ylabel('Pressure [psi]');
+title('Flow Uniformity - Dynamic Pressure');
+legend('0.0 inH_2O', '2.0 inH_2O', '7.0 inH_2O', 'Average', '','','q_{setting}', 'Location', 'northeast');
+hold off;
+exportgraphics(fig, 'Flow Uniformity_Dynamic Pressure.pdf', 'ContentType', 'vector');
+close(fig);
+% Airspeed Uniformity
+fig = figure('Visible', 'off');
+plot(v0, 'o');
+hold on;
+plot(v2, 'o');
+plot(v7, 'o');
+yline([mean(v0, 'all'), mean(v2, 'all'), mean(v7, 'all')], 'k');
+yline([0, 29, 55], 'r');
+grid on; grid minor;
+xlabel('Pressure Port');
+ylabel('Airspeed [m/s]');
+title('Flow Uniformity - Test Section Airspeed');
+legend('0.0 inH_2O', '2.0 inH_2O', '7.0 inH_2O', 'Average','','', 'V_{setting}', 'Location', 'northeast');
+hold off;
+exportgraphics(fig, 'Flow Uniformity_Test Section Airspeed.pdf', 'ContentType', 'vector' );
+close(fig);
+% Dynamic Pressure
+fig = figure('Visible', 'off');
+plot(q_uniform2, 'ko')
+hold on
+plot(q_uniform7, 'rd')
+grid on; grid minor;
+xlabel('Pressure Port');
+ylabel('$\frac{q - \bar{q}}{\bar{q}}$','Interpreter', 'latex');
+title('Flow Uniformity - Dynamic Pressure Deviation from Average'); 
+%%%%%%%%%%%%%%nH_2O', '7.0 inH_2O', Location='best');
+ax = gca;
+ax.YAxis.TickLabelFormat = '%g%%';
+hold off
+exportgraphics(fig, 'Flow Uniformity_Dynamic Pressure Deviation from Average.pdf', 'ContentType', 'vector');
+close(fig);
+% Airspeed
+fig = figure('Visible', 'off');
+plot(v_uniform2, 'ko')
+hold on
+plot(v_uniform7, 'rd')
+grid on; grid minor;
+xlabel('Pressure Port');
+ylabel('$\frac{v - \bar{v}}{\bar{v}}$','Interpreter', 'latex');
+title('Flow Uniformity - Airspeed Deviation from Average');
+legend('2.0 inH_2O', '7.0 inH_2O', Location='best');
+ax = gca;
+ax.YAxis.TickLabelFormat = '%g%%';
+hold off
+exportgraphics(fig, 'Flow Uniformity_Airspeed Deviation from Average.pdf', 'ContentType', 'vector');
+close(fig);
+%%
+x = [-19.5000, -16.5000, -13.5000, -10.5000, -7.5000, -4.5000, 0, 1.5000, 4.5000, 7.5000, 10.5000, 13.5000, 16.5000, 19.5000, -7.5000, -7.5000, -7.5000, -7.5000, -7.5000, -7.5000, -7.5000, -7.5000, -7.5000, -7.5000, 7.5000, 7.5000, 7.5000, 7.5000, 7.5000, 7.5000, 7.5000, 7.5000, 7.5000, 7.5000]';
+z = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13.5000, 10.5000, 7.5000, 4.5000, 1.5000, -1.5000, -4.5000, -7.5000, -10.5000, -13.5000, 13.5000, 10.5000, 7.5000, 4.5000, 1.5000, -1.5000, -4.5000, -7.5000, -10.5000, -13.5000]';
+% Contour of Dynamic Pressure Deviation for 2in Plot %
+fig = figure('Visible', 'off');
+dq = q_uniform2;
+[X,Z] = meshgrid(linspace(min(x), max(x), 100), linspace(min(z), max(z), 100));
+F = scatteredInterpolant(x, z, dq, 'linear', 'none');
+Dq = F(X, Z);
+contourf(X, Z, Dq);
+hold on; grid on; grid minor;
+scatter(x, z, 'ro');
+xlabel('x position [in]');
+ylabel('z position [in]');
+h = colorbar;
+ticks = h.Ticks;
+percentLabels = cellstr(num2str(ticks', '%.1f%%'));
+h.TickLabels = percentLabels; % Set custom tick labels with percentages
+set(get(h, 'label'), 'string', '$\frac{q - \bar{q}}{\bar{q}}$','Interpreter', 'latex');
+title('Dynamic Pressure Deviation [q=2.0 inH_2O]');
+hold off;
+exportgraphics(fig, 'Dynamic Pressure Deviation q=2.0 inH_2O.pdf', 'ContentType', 'vector');
+close(fig);
+% Contour of Dynamic Pressure Deviation for 7in Plot %
+fig = figure('Visible', 'off');
+dq = q_uniform7;
+[X,Z] = meshgrid(linspace(min(x), max(x), 100), linspace(min(z), max(z), 100));
+F = scatteredInterpolant(x, z, dq, 'linear', 'none');
+Dq = F(X, Z);
+contourf(X, Z, Dq);
+hold on; grid on; grid minor;
+scatter(x, z, 'ro');
+xlabel('x position [in]');
+ylabel('z position [in]');
+h = colorbar;
+ticks = h.Ticks;
+percentLabels = cellstr(num2str(ticks', '%.1f%%'));
+h.TickLabels = percentLabels; % Set custom tick labels with percentages
+set(get(h, 'label'), 'string', '$\frac{q - \bar{q}}{\bar{q}}$','Interpreter', 'latex');
+title('Dynamic Pressure Deviation [q=7.0 inH_2O]');
+hold off;
+exportgraphics(fig, 'Dynamic Pressure Deviation q=7.0 inH_2O.pdf', 'ContentType', 'vector');
+close(fig);
+% Contour of Airspeed Distribution for 7in Plot, IAS = 54.4 m/s %
+fig = figure('Visible', 'off');
+dq = v7;
+[X,Z] = meshgrid(linspace(min(x), max(x)), linspace(min(z), max(z)));
+F = scatteredInterpolant(x, z, dq, 'linear', 'none');
+Dq = F(X, Z);
+contourf(X, Z, Dq);
+hold on; grid on; grid minor;
+scatter(x, z, 'ro');
+xlabel('x position [in]');
+ylabel('z position [in]');
+h = colorbar;
+set(get(h, 'label'), 'string', 'Measured Airspeed [m/s]');
+title('Airspeed Distribution - IAS = 54.5 m/s');
+hold off
+exportgraphics(fig, 'Airspeed Distribution_54.5.pdf', 'ContentType', 'vector');
