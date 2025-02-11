@@ -8,8 +8,10 @@ function f_interp = bilinearInterpolation(x1, x2, y1, y2, fQ11, fQ21, fQ12, fQ22
 end
 %% Bilinear Interpolation - Temperature Correction inHg
 % Define the coordinates of the known points
-T1 = 72; T2 = 74;
-B1 = 29; B2 = 30;
+T1 = 72; 
+T2 = 74;
+B1 = 29; 
+B2 = 30;
 % Defining the Known Values
 Q11 = 0.119; Q12 = 0.123;
 Q21 = 0.114; Q22 = 0.118;
