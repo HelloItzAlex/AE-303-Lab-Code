@@ -20,25 +20,25 @@ R = 287.058;
 %%
 %Corrections
 % Latitude Correction
-SD_lat = 32.7157;
-Lat_correction29 = interp1([32 34],[0.035 0.030], SD_lat);
-Lat_correction30 = interp1([32 34],[0.036 0.031], SD_lat);
-Lat_correction = interp1([29 30], [Lat_correction29 Lat_correction30], P_Ambient, 'linear', 'extrap');
+SD_Lat = 32.7157;
+Lat_Correction_29 = interp1([32 34],[0.035 0.030], SD_Lat);
+Lat_Correction_30 = interp1([32 34],[0.036 0.031], SD_Lat);
+Lat_Correction = interp1([29 30], [Lat_Correction_29 Lat_Correction_30], P_Ambient, 'linear', 'extrap');
 
 % Temperature Correction
 
-temps = 71:2:75;
-correction29 = [.114, .119, .124];
-correction30 = [.118, .123, .128];
-correction31 = [.122, .127, .133];
+Temps = 71:2:75;
+Correction_29 = [.114, .119, .124];
+Correction_30 = [.118, .123, .128];
+Correction_31 = [.122, .127, .133];
 
-T_correct29 = interp1(temps, correction29, T_Ambient);
-T_correct30 = interp1(temps, correction30, T_Ambient);
-T_correct31 = interp1(temps, correction31, T_Ambient);
-Temp_correction = interp1([29 30 31], [T_correct29 T_correct30 T_correct30], P_Ambient);
+T_Corrected_29 = interp1(Temps, Correction_29, T_Ambient);
+T_Corrected_30 = interp1(Temps, Correction_30, T_Ambient);
+T_Corrected_31 = interp1(Temps, Correction_31, T_Ambient);
+Temp_correction = interp1([29 30 31], [T_Corrected_29 T_Corrected_30 T_Corrected_31], P_Ambient);
 
 % Total inHg correction
-Corrected_h = P_Ambient - Lat_correction - Temp_correction;
+Corrected_h = P_Ambient - Lat_Correction - Temp_correction;
 Corrected_h = Corrected_h * 0.0254;
 
 % Corrected Pressure Calculation
