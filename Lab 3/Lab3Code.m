@@ -2,9 +2,9 @@ clc
 clearvars
 %%
 %Parsing
-S_4_Raw = readtable('Lab 3 Data 2025SP', 'Sheet', '4 in Sphere','Range', 'B7:ADX66');
-S_4987_Raw = readtable('Lab 3 Data 2025SP', 'Sheet', '4.987 in Sphere', 'Range', 'B7:ADX66');
-S_6_Raw = readtable('Lab 3 Data 2025SP', 'Sheet', '6 in Sphere','Range', 'B7:ADX66');
+Sph_4_Raw = readtable('Lab 3 Data 2025SP', 'Sheet', '4 in Sphere','Range', 'E7:ADX66');
+Sph_4987_Raw = readtable('Lab 3 Data 2025SP', 'Sheet', '4.987 in Sphere', 'Range', 'E7:ADX66');
+Sph_6_Raw = readtable('Lab 3 Data 2025SP', 'Sheet', '6 in Sphere','Range', 'E7:ADX66');
 %%
 temps = readtable('Lab 3 Data 2025SP', 'Sheet', 'TEMPERATURE DATA', 'Range', 'B6:G20');
 temps = renamevars(temps, ["Var1","Var2","Var3","Var4","Var5","Var6"],["q4","Temp4","q4987", "Temp4987","q6", "Temp6"]);
@@ -32,15 +32,15 @@ meu(:,1) = meu_0 .* (temps.Temp4 ./ T0) .^ 0.76;
 meu(:,2) = meu_0 .* (temps.Temp4987 ./ T0) .^ 0.76;
 meu(:,3) = meu_0 .* (temps.Temp6 ./ T0) .^ 0.76;
 % Corrected Barometer Pressure for Density
-P_0s = dP(S_4_Raw, 64); P_0 = P_0s(1);
+P_0s = dP2(Sph_4_Raw); P_0 = P_0s(1);
 P_corr4 = Corrected_Pressure_Amb + P_0s - P_0;
-P_corr4 = convpres(P_corr4, "psi", "Pa");
-P_0s = dP(S_4987_Raw, 64); P_0 = P_0s(1);
+P_corr4 = P_corr4 * 6895;
+P_0s = dP2(Sph_4987_Raw); P_0 = P_0s(1);
 P_corr4987 = Corrected_Pressure_Amb + P_0s - P_0;
-P_corr4987 = convpres(P_corr4987, "psi", "Pa");
-P_0s = dP(S_6_Raw, 64); P_0 = P_0s(1);
+P_corr4987 = P_corr4987 * 6895;
+P_0s = dP2(Sph_6_Raw); P_0 = P_0s(1);
 P_corr6 = Corrected_Pressure_Amb + P_0s - P_0;
-P_corr6 = convpres(P_corr6, "psi", "Pa");
+P_corr6 = P_corr6 * 6895;
 % Density Calcs
 R = 287.1;
 rho4 = P_corr4 ./ (R * convtemp(temps.Temp4, 'F', 'K'));
