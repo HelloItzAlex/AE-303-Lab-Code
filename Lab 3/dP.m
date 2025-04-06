@@ -4,11 +4,11 @@ function [deltaPs] = dP(data, numFind)
     data = table2array(data);
     averages = [];
     for i = 1:length(rowsnumFind)
-     rowIndex = rowsnumFind(i);
-     if rowIndex <= size(data, 1)
-     RowAverage = mean(data(rowIndex, 2:end), 'omitnan');
-     averages = [averages; RowAverage];
-     end
-     end
+        rowIndex = rowsnumFind(i);
+        if rowIndex <= size(data, 1)
+            RowAverage = mean(data(rowIndex, 2:end), 'omitnan');
+            averages = [averages; RowAverage];
+        end
+    end
     deltaPs = averages;
 end

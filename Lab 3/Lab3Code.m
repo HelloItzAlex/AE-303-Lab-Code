@@ -17,7 +17,7 @@ Corrected_Pressure_Amb = Correct_Pres(Tamb, Pamb);
 q_S = [temps.q4, temps.q4987, temps.q6]; % inH2O
 q_S = q_S .* 0.03613; % psi
 %% -- Obtain delta P from readings --
-deltas_4 = dP(S_4_Raw, 62) - dP(S_4_Raw, 61); % psi
+deltas_4 = dP(S_4_Raw, 62) - dmP(S_4_Raw, 61); % psi
 deltas_4987 = dP(S_4987_Raw, 62) - dP(S_4987_Raw, 61); % psi
 deltas_6 = dP(S_6_Raw, 62) - dP(S_6_Raw, 61); % psi
 %% -- Compute delta P / q for each setting of q in H2O --
