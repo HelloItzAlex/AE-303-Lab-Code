@@ -45,7 +45,6 @@ S = 93.81 * 0.0006451606243503233; % reference area, m^2
 cBar = convlength(3.466, 'in', 'm'); % reference length, in
 b = convlength(27.066, 'in', 'm'); % reference wingspan, in
 %% -- Calculate cl, cm, cn, cd --
-% F = [F(model on, wind on) - F(model on, wind off)]- [F(model off, wind on) - F(model off, wind off)]
 fxTOn = (data.Config2_Mon_Ton_Won.Fx - data.Config1_Mon_Ton_Woff.Fx) - (data.Config4_Moff_Toff_Won.Fx - data.Config5_Moff_Toff_Woff.Fx);
 fzTOn = (data.Config2_Mon_Ton_Won.Fz - data.Config1_Mon_Ton_Woff.Fz) - (data.Config4_Moff_Toff_Won.Fz - data.Config5_Moff_Toff_Woff.Fz);
 myTOn = (data.Config2_Mon_Ton_Won.My - data.Config1_Mon_Ton_Woff.My) - (data.Config4_Moff_Toff_Won.My - data.Config5_Moff_Toff_Woff.My);
