@@ -123,13 +123,7 @@ for i = 1:N
             s = 1; % Reset to first row
         end
         if q == L
-            t = 1; % Finished with frame, reset t
-%             figure(1) % Update only figure 1
-%             contourf(x(:,:,i),y(:,:,i),sqrt(u(:,:,i).^2 + v(:,:,i).^2),20,'LineStyle','none')
-%             axis equal % Update cool animation of the flow
-%             xlabel('x [cm]')
-%             ylabel('y [cm]')
-%             drawnow
+            t = 1;
         end
     end
 end
@@ -163,90 +157,54 @@ uPrime_VPrime_Bar= SigmaUPrime_VPrime /N;
 flowVorticity = gradVx - gradUx;
 %% Visualization
 close all;
-f = figure;
-contourf(X / 5,Y / 5,u_Bar,100,'LineStyle','none')
-axis equal
-xlabel('x / Nozzle Exit Diameter'); ylabel('y / Nozzle Exit Diameter')
-title('Time Averaged u velocity [m/s]', 'Interpreter', 'latex');colorbar
-Print_PNG(f, 'Time Averaged u velocity.png')
 
-f = figure;
-contourf(X / 5,Y / 5,uprimeSQbar,100,'LineStyle','none')
-axis equal
-xlabel('x / Nozzle Exit Diameter'); ylabel('y / Nozzle Exit Diameter')
-title('Reynolds Normal Stress $\overline{{u''^2}}$ $[\frac{m^2}{s^2}$', 'Interpreter','latex');colorbar
-Print_PNG(f, 'Reynolds Normal Stress u.png')
-f = figure;
-contourf(X / 5,Y / 5,vprimeSQbar,100,'LineStyle','none')
-axis equal
-xlabel('x / Nozzle Exit Diameter'); ylabel('y / Nozzle Exit Diameter')
-title('Reynolds Normal Stres $\overline{{v''^2}}$ $[\frac{m^2}{s^2}]$', 'Interpreter','latex');colorbar
-Print_PNG(f, 'Reynolds Normal Stres v.png')
-f = figure;
-contourf(X / 5,Y / 5,uPrime_VPrime_Bar,100,'LineStyle','none')
-axis equal
-xlabel('x / Nozzle Exit Diameter'); ylabel('y / Nozzle Exit Diameter')
-title('Reynolds Shear Stress $\overline{{u''v''}}$ $[\frac{m^2}{s^2}]$', 'Interpreter','latex');colorbar
-Print_PNG(f, 'Reynolds Shear Stres.png')
-f = figure;
-contourf(X / 5,Y / 5,flowVorticity,100,'LineStyle','none')
-axis equal
-xlabel('x / Nozzle Exit Diameter'); ylabel('y / Nozzle Exit Diameter')
-title('Vorticity $\frac{\partial v}{\partial x}$ - $\frac{\partial u}{\partial y}$', 'Interpreter','latex');colorbar
-Print_PNG(f, 'Vorticity.png')
+% === Contour plots ===
+contourData = {
+    u_Bar, 'u_velocity';
+    uprimeSQbar, 'uprimeSQ';
+    vprimeSQbar, 'vprimeSQ';
+    uPrime_VPrime_Bar, 'uvprime';
+    flowVorticity, 'vorticity';
+};
+
+for i = 1:size(contourData, 1)
+    f = figure;
+    contourf(X / 5, Y / 5, contourData{i,1}, 100, 'LineStyle', 'none');
+    axis equal;
+    xlabel('x / Nozzle Exit Diameter');
+    ylabel('y / Nozzle Exit Diameter');
+    colorbar;
+    Print_PNG(f, contourData{i,2});
+end
+
+% === Profile line plots ===
 selectedYPositions = [1 40 80 119];
 x_D = [0.0217 0.8959 1.7926 2.6668];
 Y_shifted = (Y - mean(Y(1, :), 'all')) / 2.5;
 Y_Normalized = (Y - mean(Y(1, :), 'all'));
-% u Velocity Profiles
-f = figure;
-plot(Y_Normalized(selectedYPositions, :)', u_Bar(selectedYPositions, :)');
-title('u Velocity Profiles', 'Interpreter', 'latex');
-xlabel('y [cm]');
-ylabel('u [m/s]');
-grid on;
-legend(arrayfun(@(x) sprintf('x / D = %.4f', x), x_D, 'UniformOutput', false));
-Print_PNG(f, 'u velocity profiles.png')
-% Reynolds Normal Stress Profiles
-f = figure;
-plot(Y_shifted(selectedYPositions, :)', uprimeSQbar(selectedYPositions, :)');
-title('Reynolds Normal Stress $\overline{{u''^2}}$ $[\frac{m^2}{s^2}]$ Profiles', 'Interpreter','latex');
-xlabel('y / Jet Half Width');
-ylabel('Reynolds Shear Stress in x $[\frac{m^2}{s^2}]$', 'Interpreter', 'latex');
-grid on;
-legend(arrayfun(@(x) sprintf('x / D = %.4f', x), x_D, 'UniformOutput', false));
-Print_PNG(f, 'Reynolds Shear Stress in x.png')
-f = figure;
-plot(Y_shifted(selectedYPositions, :)', vprimeSQbar(selectedYPositions, :)');
-title('Reynolds Normal Stress $\overline{{u''^2}}$ $[\frac{m^2}{s^2}]$ Profiles', 'Interpreter','latex');
-xlabel('y / Jet Half Width');
-ylabel('Reynolds Shear Stress in y $[\frac{m^2}{s^2}]$', 'Interpreter', 'latex');
-grid on;
-legend(arrayfun(@(x) sprintf('x / D = %.4f', x), x_D, 'UniformOutput', false));
-Print_PNG(f, 'Reynolds Shear Stress in y.png')
-% Reynolds Shear Stress Profiles
-f = figure;
-plot(Y_shifted(selectedYPositions, :)', uPrime_VPrime_Bar(selectedYPositions, :)');
-title('Reynolds Shear Stress $\overline{{u''v''}}$ Profiles', 'Interpreter', 'latex');
-xlabel('y [cm]');
-ylabel('$\overline{{u''v''}}$ $[m^2/s^2]$', 'Interpreter', 'latex');
-grid on;
-legend(arrayfun(@(x) sprintf('x / D = %.4f', x), x_D, 'UniformOutput', false));
-Print_PNG(f, 'Reynolds Shear Stress Profiles.png')
-% Vorticity Profiles
-f = figure;
-plot(Y_shifted(selectedYPositions, :)', flowVorticity(selectedYPositions, :)');
-title('Vorticity Profiles', 'Interpreter', 'latex');
-xlabel('y [cm]');
-ylabel('Vorticity $\frac{\partial v}{\partial x}$ - $\frac{\partial u}{\partial y}$', 'Interpreter','latex');
-grid on;
-legend(arrayfun(@(x) sprintf('x / D = %.4f', x), x_D, 'UniformOutput', false));
-Print_PNG(f, 'Vorticity Profiles.png')
-function Print_PNG(f, title)
-pdfFileName = sprintf(title);
-print(f, pdfFileName, '-dpng');
+
+profileData = {
+    u_Bar, Y_Normalized, 'y [cm]', 'u [m/s]', 'u_velocity_profiles';
+    v_Bar, Y_Normalized, 'y [cm]', 'v [m/s]', 'v_velocity_profiles';
+    uprimeSQbar, Y_shifted, 'y / Jet Half Width', 'Reynolds Stress x', 'uprimeSQ_profiles';
+    vprimeSQbar, Y_shifted, 'y / Jet Half Width', 'Reynolds Stress y', 'vprimeSQ_profiles';
+    uPrime_VPrime_Bar, Y_shifted, 'y [cm]', 'uv'' [m^2/s^2]', 'uvprime_profiles';
+    flowVorticity, Y_shifted, 'y [cm]', 'Vorticity', 'vorticity_profiles';
+};
+
+for i = 1:size(profileData,1)
+    f = figure;
+    plot(profileData{i,2}(selectedYPositions, :)', profileData{i,1}(selectedYPositions, :)');
+    xlabel(profileData{i,3});
+    ylabel(profileData{i,4}, 'Interpreter', 'latex');
+    grid on;
+    legend(arrayfun(@(x) sprintf('x / D = %.4f', x), x_D, 'UniformOutput', false));
+    Print_PNG(f, profileData{i,5});
 end
 
-
+% === Print_PNG function ===
+function Print_PNG(f, filename)
+    print(f, filename, '-dpng');
+end
 
 
